@@ -6,10 +6,13 @@ import MainScreen from './screens/MainScreen';
 import CustomSidebar, { CustomSidebarProps } from './components/CustomSidebar';
 
 import { useFonts, Nunito_700Bold, Nunito_400Regular } from '@expo-google-fonts/nunito';
-import { View, Text } from 'react-native';
+import { View, Text, Dimensions } from 'react-native';
 import { WebsitesProvider } from './contexts/WebsitesContext';
 
 const Drawer = createDrawerNavigator();
+
+const { width } = Dimensions.get('window');
+const isTablet = width >= 768;
 
 const App: React.FC = () => {
   const [fontsLoaded] = useFonts({
@@ -32,14 +35,14 @@ const App: React.FC = () => {
           id={undefined} // not sure why this is needed, but it removes a TS warning
           drawerContent={(props: CustomSidebarProps) => <CustomSidebar {...props} />}
           screenOptions={{
-            headerShown: true,
+            headerShown: !isTablet,
             drawerStyle: {
               backgroundColor: '#FFFFFF',
-              width: 320, // Width for tablets
+              width: 320,
             },
-            drawerType: 'slide',
-            swipeEnabled: true,
-            swipeEdgeWidth: 200,
+            drawerType: isTablet ? 'permanent' : 'slide',
+            swipeEnabled: !isTablet,
+            swipeEdgeWidth: isTablet ? 0 : 200,
           }}
         >
           <Drawer.Screen name="Main" component={MainScreen} />
