@@ -1,4 +1,3 @@
-import 'react-native-gesture-handler';
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createDrawerNavigator } from '@react-navigation/drawer';
@@ -35,10 +34,12 @@ const App: React.FC = () => {
           screenOptions={{
             headerShown: false,
             drawerStyle: {
-              backgroundColor: 'transparent',
+              backgroundColor: '#FFFFFF',
               width: 320, // Width for tablets
             },
-            drawerType: 'front',
+            drawerType: 'slide',
+            swipeEnabled: true,
+            swipeEdgeWidth: 50,
           }}
         >
           <Drawer.Screen name="Main" component={MainScreen} />
