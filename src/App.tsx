@@ -39,7 +39,7 @@ const App: React.FC = () => {
             },
             drawerType: 'slide',
             swipeEnabled: true,
-            swipeEdgeWidth: 50,
+            swipeEdgeWidth: 100,
           }}
         >
           <Drawer.Screen name="Main" component={MainScreen} />

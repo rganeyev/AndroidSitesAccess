@@ -50,12 +50,16 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#82c9e3',
-    padding: isTablet ? 25 : 15,
+    paddingHorizontal: isTablet ? 25 : 15,
+    paddingVertical: isTablet ? 20 : 12,
+    paddingTop: isTablet ? 25 : 15,
+    zIndex: 10,
   },
   menuIcon: {
     width: isTablet ? 40 : 30,
     height: isTablet ? 40 : 30,
     marginRight: isTablet ? 25 : 15,
+    tintColor: '#FFFFFF',
   },
   headerTitle: {
     fontFamily: 'Nunito_700Bold',
