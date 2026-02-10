@@ -32,14 +32,14 @@ const App: React.FC = () => {
           id={undefined} // not sure why this is needed, but it removes a TS warning
           drawerContent={(props: CustomSidebarProps) => <CustomSidebar {...props} />}
           screenOptions={{
-            headerShown: false,
+            headerShown: true,
             drawerStyle: {
               backgroundColor: '#FFFFFF',
               width: 320, // Width for tablets
             },
             drawerType: 'slide',
             swipeEnabled: true,
-            swipeEdgeWidth: 100,
+            swipeEdgeWidth: 200,
           }}
         >
           <Drawer.Screen name="Main" component={MainScreen} />
