@@ -7,6 +7,7 @@ import {
   TextInput,
   Image,
   SafeAreaView,
+  Modal,
 } from 'react-native';
 
 import { StyleSheet } from 'react-native';
@@ -22,6 +23,8 @@ export interface CustomSidebarProps {
 
 const CustomSidebar: React.FC<CustomSidebarProps> = ({ navigation }) => {
   const { websites, addWebsite, removeWebsite } = useWebsites();
+  const [modalVisible, setModalVisible] = useState<boolean>(false);
+  const [newName, setNewName] = useState<string>('');
   const [newUrl, setNewUrl] = useState<string>('');
   const [selectedIcon, setSelectedIcon] = useState<string>(AVAILABLE_ICONS[0]);
 
@@ -30,10 +33,16 @@ const CustomSidebar: React.FC<CustomSidebarProps> = ({ navigation }) => {
     navigation.closeDrawer();
   };
 
+  const handleAddWebsite = () => {
+    addWebsite(newName, newUrl, selectedIcon);
+    setNewName('');
+    setNewUrl('');
+    setSelectedIcon(AVAILABLE_ICONS[0]);
+    setModalVisible(false);
+  };
+
   return (
     <SafeAreaView style={styles.container}>
-      <Text style={styles.title}>My Websites</Text>
-
       <FlatList
         data={websites}
         keyExtractor={(item) => item.url}
@@ -41,8 +50,8 @@ const CustomSidebar: React.FC<CustomSidebarProps> = ({ navigation }) => {
           <View style={styles.websiteItem}>
             <TouchableOpacity onPress={() => handleIconPress(item.url)} style={styles.iconButton}>
               <Image source={ICONS[item.icon] || ICONS.default} style={styles.websiteIcon} />
-              <Text style={styles.websiteUrl} numberOfLines={1}>
-                {item.url.replace(/^https?:\/\//, '').replace(/\/$/, '')}
+              <Text style={styles.websiteName} numberOfLines={1}>
+                {item.name}
               </Text>
             </TouchableOpacity>
             <TouchableOpacity onPress={() => removeWebsite(item.url)}>
@@ -51,34 +60,72 @@ const CustomSidebar: React.FC<CustomSidebarProps> = ({ navigation }) => {
           </View>
         )}
         style={{ flex: 1 }}
+        contentContainerStyle={{ paddingTop: 20 }}
       />
 
-      <View style={styles.addWebsiteContainer}>
-        <Text style={styles.addTitle}>Add a new website</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="e.g., wikipedia.org"
-          value={newUrl}
-          onChangeText={setNewUrl}
-          autoCapitalize="none"
-        />
-
-        <Text style={styles.addTitle}>Choose an icon</Text>
-        <View style={styles.iconSelectorContainer}>
-          {AVAILABLE_ICONS.map((iconName) => (
-            <TouchableOpacity key={iconName} onPress={() => setSelectedIcon(iconName)}>
-              <Image
-                source={ICONS[iconName]}
-                style={[styles.selectorIcon, selectedIcon === iconName && styles.selectedIcon]}
-              />
-            </TouchableOpacity>
-          ))}
-        </View>
-
-        <TouchableOpacity style={styles.addButton} onPress={() => addWebsite(newUrl, selectedIcon)}>
-          <Text style={styles.addButtonText}>Add ✨</Text>
+      <View style={styles.addButtonContainer}>
+        <TouchableOpacity style={styles.addButton} onPress={() => setModalVisible(true)}>
+          <Text style={styles.addButtonText}>Add URL</Text>
         </TouchableOpacity>
       </View>
+
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => setModalVisible(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Add New Website</Text>
+
+            <Text style={styles.label}>Name</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="e.g., Games"
+              value={newName}
+              onChangeText={setNewName}
+              autoCapitalize="words"
+            />
+
+            <Text style={styles.label}>URL</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="e.g., wikipedia.org"
+              value={newUrl}
+              onChangeText={setNewUrl}
+              autoCapitalize="none"
+            />
+
+            <Text style={styles.label}>Choose an icon</Text>
+            <View style={styles.iconSelectorContainer}>
+              {AVAILABLE_ICONS.map((iconName) => (
+                <TouchableOpacity key={iconName} onPress={() => setSelectedIcon(iconName)}>
+                  <Image
+                    source={ICONS[iconName]}
+                    style={[styles.selectorIcon, selectedIcon === iconName && styles.selectedIcon]}
+                  />
+                </TouchableOpacity>
+              ))}
+            </View>
+
+            <View style={styles.modalButtons}>
+              <TouchableOpacity
+                style={[styles.modalButton, styles.cancelButton]}
+                onPress={() => setModalVisible(false)}
+              >
+                <Text style={styles.cancelButtonText}>Cancel</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.modalButton, styles.submitButton]}
+                onPress={handleAddWebsite}
+              >
+                <Text style={styles.submitButtonText}>Add</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 };
@@ -89,19 +136,11 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
     overflow: 'hidden',
   },
-  title: {
-    fontFamily: 'Nunito_700Bold',
-    fontSize: 34,
-    margin: 30,
-    marginTop: 50,
-    color: '#82c9e3',
-    textAlign: 'left',
-  },
   websiteItem: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingVertical: 12,
-    paddingHorizontal: 30,
+    paddingHorizontal: 20,
     justifyContent: 'space-between',
   },
   iconButton: {
@@ -113,12 +152,12 @@ const styles = StyleSheet.create({
   websiteIcon: {
     width: 40,
     height: 40,
-    marginRight: 20,
+    marginRight: 15,
     borderRadius: 10,
   },
-  websiteUrl: {
-    fontFamily: 'Nunito_400Regular',
-    fontSize: 16,
+  websiteName: {
+    fontFamily: 'Nunito_700Bold',
+    fontSize: 18,
     color: '#3d5a80',
     flex: 1,
   },
@@ -126,30 +165,11 @@ const styles = StyleSheet.create({
     fontSize: 20,
     opacity: 0.5,
   },
-  addWebsiteContainer: {
-    padding: 30,
-    paddingTop: 20,
+  addButtonContainer: {
+    padding: 20,
     borderTopWidth: 1,
     borderTopColor: '#f0f0f0',
     backgroundColor: '#FFFFFF',
-  },
-  addTitle: {
-    fontFamily: 'Nunito_700Bold',
-    fontSize: 16,
-    color: '#3d5a80',
-    marginBottom: 15,
-  },
-  input: {
-    fontFamily: 'Nunito_400Regular',
-    width: '100%',
-    backgroundColor: '#f7f7f7',
-    borderWidth: 0,
-    borderRadius: 15,
-    paddingHorizontal: 20,
-    paddingVertical: 15,
-    fontSize: 16,
-    color: '#3d5a80',
-    marginBottom: 20,
   },
   addButton: {
     backgroundColor: '#52b64a',
@@ -167,11 +187,51 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 18,
   },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalContent: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 20,
+    padding: 30,
+    width: '85%',
+    maxWidth: 400,
+  },
+  modalTitle: {
+    fontFamily: 'Nunito_700Bold',
+    fontSize: 24,
+    color: '#3d5a80',
+    marginBottom: 20,
+    textAlign: 'center',
+  },
+  label: {
+    fontFamily: 'Nunito_700Bold',
+    fontSize: 16,
+    color: '#3d5a80',
+    marginBottom: 10,
+    marginTop: 10,
+  },
+  input: {
+    fontFamily: 'Nunito_400Regular',
+    width: '100%',
+    backgroundColor: '#f7f7f7',
+    borderWidth: 0,
+    borderRadius: 15,
+    paddingHorizontal: 20,
+    paddingVertical: 15,
+    fontSize: 16,
+    color: '#3d5a80',
+  },
   iconSelectorContainer: {
     flexDirection: 'row',
     marginBottom: 20,
+    marginTop: 10,
     justifyContent: 'flex-start',
     gap: 15,
+    flexWrap: 'wrap',
   },
   selectorIcon: {
     width: 50,
@@ -184,6 +244,34 @@ const styles = StyleSheet.create({
     transform: [{ scale: 1.1 }],
     borderColor: '#52b64a',
     borderWidth: 3,
+  },
+  modalButtons: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 20,
+    gap: 10,
+  },
+  modalButton: {
+    flex: 1,
+    paddingVertical: 15,
+    borderRadius: 15,
+    alignItems: 'center',
+  },
+  cancelButton: {
+    backgroundColor: '#f0f0f0',
+  },
+  cancelButtonText: {
+    fontFamily: 'Nunito_700Bold',
+    color: '#3d5a80',
+    fontSize: 16,
+  },
+  submitButton: {
+    backgroundColor: '#52b64a',
+  },
+  submitButtonText: {
+    fontFamily: 'Nunito_700Bold',
+    color: 'white',
+    fontSize: 16,
   },
 });
 

@@ -34,7 +34,6 @@ const MainScreen: React.FC<MainScreenProps> = ({ route, navigation }) => {
         <TouchableOpacity onPress={() => navigation.openDrawer()}>
           <Image source={menuIcon} style={styles.menuIcon} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Websites for Kids</Text>
       </View>
       <WebsiteView url={currentUrl} />
     </SafeAreaView>
@@ -61,14 +60,7 @@ const styles = StyleSheet.create({
     marginRight: isTablet ? 25 : 15,
     tintColor: '#FFFFFF',
   },
-  headerTitle: {
-    fontFamily: 'Nunito_700Bold',
-    fontSize: isTablet ? 28 : 20,
-    color: 'white',
-    textShadowColor: 'rgba(0, 0, 0, 0.1)',
-    textShadowOffset: { width: -1, height: 2 },
-    textShadowRadius: 3,
-  },
+
 });
 
 export default MainScreen;

@@ -3,19 +3,21 @@ import { Alert } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 interface Website {
+  name: string;
   url: string;
   icon: string;
 }
 
 interface WebsitesContextProps {
   websites: Website[];
-  addWebsite: (newUrl: string, selectedIcon: string) => void;
+  addWebsite: (name: string, url: string, selectedIcon: string) => void;
   removeWebsite: (idToRemove: string) => void;
 }
 
 const initialWebsites: Website[] = [
-  { url: 'https://rganeyev.github.io/kids-finance/', icon: 'finance' },
-  { url: 'https://chehmet.github.io/EminGames/', icon: 'game' },
+  { name: 'Routines', url: 'https://rganeyev.github.io/spiderman-routine-reminder/', icon: 'default' },
+  { name: 'Finance', url: 'https://rganeyev.github.io/kids-finance/', icon: 'finance' },
+  { name: 'Games', url: 'https://chehmet.github.io/EminGames/', icon: 'game' },
 ];
 
 const WebsitesContext = createContext<WebsitesContextProps>({
@@ -54,7 +56,12 @@ export const WebsitesProvider: React.FC<{ children: ReactNode }> = ({ children }
     loadWebsites();
   }, []);
 
-  const addWebsite = (newUrl: string, selectedIcon: string) => {
+  const addWebsite = (name: string, newUrl: string, selectedIcon: string) => {
+    const trimmedName = name.trim();
+    if (trimmedName === '') {
+      Alert.alert('Oops!', 'Please enter a name.');
+      return;
+    }
     let urlToAdd = newUrl.trim().toLowerCase();
     if (urlToAdd === '') {
       Alert.alert('Oops!', 'Please enter a website address.');
@@ -69,6 +76,7 @@ export const WebsitesProvider: React.FC<{ children: ReactNode }> = ({ children }
     }
 
     const newWebsite: Website = {
+      name: trimmedName,
       url: urlToAdd,
       icon: selectedIcon,
     };

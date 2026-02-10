@@ -38,7 +38,7 @@ const App: React.FC = () => {
             headerShown: !isTablet,
             drawerStyle: {
               backgroundColor: '#FFFFFF',
-              width: 320,
+              width: isTablet ? 250 : 320,
             },
             drawerType: isTablet ? 'permanent' : 'slide',
             swipeEnabled: !isTablet,
