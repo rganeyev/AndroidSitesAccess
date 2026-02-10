@@ -1,5 +1,6 @@
 {
   "expo": {
+    "owner": "rganeyev",
     "name": "KidsBrowser",
     "slug": "KidsBrowser",
     "version": "1.0.0",
@@ -27,6 +28,11 @@
     },
     "plugins": [
       "expo-font"
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "13c58975-9c3e-4460-8f12-1555ecfe7df2"
+      }
+    }
   }
 }
