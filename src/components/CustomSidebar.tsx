@@ -43,11 +43,12 @@ const CustomSidebar: React.FC<CustomSidebarProps> = ({ navigation }) => {
     setModalVisible(false);
   };
 
-  const handleOpenCalendar = () => {
-    const packageName = 'com.skylight';
-    
+  const handleOpenCalendar = async () => {
     try {
-      IntentLauncher.openApplication(packageName);
+      await IntentLauncher.startActivityAsync('android.intent.action.MAIN', {
+        packageName: 'com.skylight',
+        className: 'odesk.johnlife.skylight.activity.MainActivity',
+      });
       navigation.closeDrawer();
     } catch (error) {
       Alert.alert('Calendar Not Found', 'The Skylight Calendar app is not installed on this device.');
