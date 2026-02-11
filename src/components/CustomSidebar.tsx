@@ -8,6 +8,8 @@ import {
   Image,
   SafeAreaView,
   Modal,
+  Linking,
+  Alert,
 } from 'react-native';
 
 import { StyleSheet } from 'react-native';
@@ -41,6 +43,24 @@ const CustomSidebar: React.FC<CustomSidebarProps> = ({ navigation }) => {
     setModalVisible(false);
   };
 
+  const handleOpenCalendar = async () => {
+    const packageName = 'com.skylight';
+    const url = `intent://#Intent;package=${packageName};end`;
+    
+    try {
+      const canOpen = await Linking.canOpenURL(url);
+      if (canOpen) {
+        await Linking.openURL(url);
+        navigation.closeDrawer();
+      } else {
+        Alert.alert('Calendar Not Found', 'The Skylight Calendar app is not installed on this device.');
+      }
+    } catch (error) {
+      Alert.alert('Error', 'Failed to open the Calendar app.');
+      console.error('Error opening calendar:', error);
+    }
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <FlatList
@@ -63,7 +83,10 @@ const CustomSidebar: React.FC<CustomSidebarProps> = ({ navigation }) => {
         contentContainerStyle={{ paddingTop: 20 }}
       />
 
-      <View style={styles.addButtonContainer}>
+      <View style={styles.bottomButtonsContainer}>
+        <TouchableOpacity style={styles.calendarButton} onPress={handleOpenCalendar}>
+          <Text style={styles.calendarButtonText}>📅 Calendar</Text>
+        </TouchableOpacity>
         <TouchableOpacity style={styles.addButton} onPress={() => setModalVisible(true)}>
           <Text style={styles.addButtonText}>Add URL</Text>
         </TouchableOpacity>
@@ -165,11 +188,28 @@ const styles = StyleSheet.create({
     fontSize: 20,
     opacity: 0.5,
   },
-  addButtonContainer: {
+  bottomButtonsContainer: {
     padding: 20,
     borderTopWidth: 1,
     borderTopColor: '#f0f0f0',
     backgroundColor: '#FFFFFF',
+    gap: 10,
+  },
+  calendarButton: {
+    backgroundColor: '#4a90e2',
+    paddingVertical: 15,
+    borderRadius: 15,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 2.62,
+    elevation: 4,
+  },
+  calendarButtonText: {
+    fontFamily: 'Nunito_700Bold',
+    color: 'white',
+    fontSize: 18,
   },
   addButton: {
     backgroundColor: '#52b64a',
