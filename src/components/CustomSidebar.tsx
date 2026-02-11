@@ -8,9 +8,9 @@ import {
   Image,
   SafeAreaView,
   Modal,
-  Linking,
   Alert,
 } from 'react-native';
+import * as IntentLauncher from 'expo-intent-launcher';
 
 import { StyleSheet } from 'react-native';
 import { ICONS, AVAILABLE_ICONS } from './IconLibrary';
@@ -43,20 +43,14 @@ const CustomSidebar: React.FC<CustomSidebarProps> = ({ navigation }) => {
     setModalVisible(false);
   };
 
-  const handleOpenCalendar = async () => {
+  const handleOpenCalendar = () => {
     const packageName = 'com.skylight';
-    const url = `intent://#Intent;package=${packageName};end`;
     
     try {
-      const canOpen = await Linking.canOpenURL(url);
-      if (canOpen) {
-        await Linking.openURL(url);
-        navigation.closeDrawer();
-      } else {
-        Alert.alert('Calendar Not Found', 'The Skylight Calendar app is not installed on this device.');
-      }
+      IntentLauncher.openApplication(packageName);
+      navigation.closeDrawer();
     } catch (error) {
-      Alert.alert('Error', 'Failed to open the Calendar app.');
+      Alert.alert('Calendar Not Found', 'The Skylight Calendar app is not installed on this device.');
       console.error('Error opening calendar:', error);
     }
   };
