@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -29,6 +29,36 @@ const CustomSidebar: React.FC<CustomSidebarProps> = ({ navigation }) => {
   const [newName, setNewName] = useState<string>('');
   const [newUrl, setNewUrl] = useState<string>('');
   const [selectedIcon, setSelectedIcon] = useState<string>(AVAILABLE_ICONS[0]);
+  const [currentTime, setCurrentTime] = useState<Date>(new Date());
+
+  // Update time every second
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, []);
+
+  // Format time as HH:MM:SS
+  const formatTime = (date: Date): string => {
+    return date.toLocaleTimeString('en-US', {
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: false,
+    });
+  };
+
+  // Format date as Day, Month DD, YYYY
+  const formatDate = (date: Date): string => {
+    return date.toLocaleDateString('en-US', {
+      weekday: 'long',
+      month: 'long',
+      day: 'numeric',
+      year: 'numeric',
+    });
+  };
 
   const handleIconPress = (url: string) => {
     navigation.navigate('Main', { url });
@@ -58,6 +88,10 @@ const CustomSidebar: React.FC<CustomSidebarProps> = ({ navigation }) => {
 
   return (
     <SafeAreaView style={styles.container}>
+      <View style={styles.clockContainer}>
+        <Text style={styles.timeText}>{formatTime(currentTime)}</Text>
+        <Text style={styles.dateText}>{formatDate(currentTime)}</Text>
+      </View>
       <FlatList
         data={websites}
         keyExtractor={(item) => item.url}
@@ -153,6 +187,26 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#FFFFFF',
     overflow: 'hidden',
+  },
+  clockContainer: {
+    backgroundColor: '#3d5a80',
+    paddingVertical: 20,
+    paddingHorizontal: 20,
+    alignItems: 'center',
+    borderBottomWidth: 1,
+    borderBottomColor: '#f0f0f0',
+  },
+  timeText: {
+    fontFamily: 'Nunito_700Bold',
+    fontSize: 32,
+    color: '#FFFFFF',
+    marginBottom: 5,
+  },
+  dateText: {
+    fontFamily: 'Nunito_400Regular',
+    fontSize: 16,
+    color: '#FFFFFF',
+    opacity: 0.9,
   },
   websiteItem: {
     flexDirection: 'row',
