@@ -50,14 +50,27 @@ const CustomSidebar: React.FC<CustomSidebarProps> = ({ navigation }) => {
     });
   };
 
-  // Format date as Day, Month DD, YYYY
+  // Format date as MMM DD YYYY (e.g., Feb 12 2026)
   const formatDate = (date: Date): string => {
     return date.toLocaleDateString('en-US', {
-      weekday: 'long',
-      month: 'long',
+      month: 'short',
       day: 'numeric',
       year: 'numeric',
     });
+  };
+
+  // Get day of week in Tatar
+  const getTatarDayOfWeek = (date: Date): string => {
+    const days = [
+      'якшәмбе',      // Sunday
+      'дүшәмбе',      // Monday
+      'сишәмбе',      // Tuesday
+      'чәршәмбе',     // Wednesday
+      'пәнҗешәмбе',   // Thursday
+      'җомга',        // Friday
+      'шимбә',        // Saturday
+    ];
+    return days[date.getDay()];
   };
 
   const handleIconPress = (url: string) => {
@@ -91,6 +104,7 @@ const CustomSidebar: React.FC<CustomSidebarProps> = ({ navigation }) => {
       <View style={styles.clockContainer}>
         <Text style={styles.timeText}>{formatTime(currentTime)}</Text>
         <Text style={styles.dateText}>{formatDate(currentTime)}</Text>
+        <Text style={styles.dayText}>{getTatarDayOfWeek(currentTime)}</Text>
       </View>
       <FlatList
         data={websites}
@@ -203,6 +217,13 @@ const styles = StyleSheet.create({
     marginBottom: 5,
   },
   dateText: {
+    fontFamily: 'Nunito_400Regular',
+    fontSize: 16,
+    color: '#FFFFFF',
+    opacity: 0.9,
+    marginBottom: 3,
+  },
+  dayText: {
     fontFamily: 'Nunito_400Regular',
     fontSize: 16,
     color: '#FFFFFF',
