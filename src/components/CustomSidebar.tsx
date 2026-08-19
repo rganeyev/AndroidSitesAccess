@@ -11,6 +11,7 @@ import {
   Alert,
 } from 'react-native';
 import * as IntentLauncher from 'expo-intent-launcher';
+import { getCalendars } from 'expo-localization';
 
 import { StyleSheet } from 'react-native';
 import { ICONS, AVAILABLE_ICONS } from './IconLibrary';
@@ -40,9 +41,15 @@ const CustomSidebar: React.FC<CustomSidebarProps> = ({ navigation }) => {
     return () => clearInterval(timer);
   }, []);
 
-  // Format time as HH:MM:SS
+  // Read the timezone from the Android device rather than relying on the JavaScript
+  // runtime default, which can be UTC in some native configurations.
+  const localTimeZone =
+    getCalendars()[0]?.timeZone ?? Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+  // Format time as HH:MM:SS in the device's configured timezone.
   const formatTime = (date: Date): string => {
     return date.toLocaleTimeString('en-US', {
+      timeZone: localTimeZone,
       hour: '2-digit',
       minute: '2-digit',
       second: '2-digit',
@@ -50,27 +57,32 @@ const CustomSidebar: React.FC<CustomSidebarProps> = ({ navigation }) => {
     });
   };
 
-  // Format date as MMM DD YYYY (e.g., Feb 12 2026)
+  // Format date as MMM DD YYYY (e.g., Feb 12 2026) in the device's configured timezone.
   const formatDate = (date: Date): string => {
     return date.toLocaleDateString('en-US', {
+      timeZone: localTimeZone,
       month: 'short',
       day: 'numeric',
       year: 'numeric',
     });
   };
 
-  // Get day of week in Tatar
+  // Get day of week in Tatar using the device's configured timezone.
   const getTatarDayOfWeek = (date: Date): string => {
-    const days = [
-      'якшәмбе',      // Sunday
-      'дүшәмбе',      // Monday
-      'сишәмбе',      // Tuesday
-      'чәршәмбе',     // Wednesday
-      'пәнҗешәмбе',   // Thursday
-      'җомга',        // Friday
-      'шимбә',        // Saturday
-    ];
-    return days[date.getDay()];
+    const days: Record<string, string> = {
+      Sunday: 'якшәмбе',
+      Monday: 'дүшәмбе',
+      Tuesday: 'сишәмбе',
+      Wednesday: 'чәршәмбе',
+      Thursday: 'пәнҗешәмбе',
+      Friday: 'җомга',
+      Saturday: 'шимбә',
+    };
+    const weekday = date.toLocaleDateString('en-US', {
+      timeZone: localTimeZone,
+      weekday: 'long',
+    });
+    return days[weekday];
   };
 
   const handleIconPress = (url: string) => {
@@ -94,7 +106,10 @@ const CustomSidebar: React.FC<CustomSidebarProps> = ({ navigation }) => {
       });
       navigation.closeDrawer();
     } catch (error) {
-      Alert.alert('Calendar Not Found', 'The Skylight Calendar app is not installed on this device.');
+      Alert.alert(
+        'Calendar Not Found',
+        'The Skylight Calendar app is not installed on this device.',
+      );
       console.error('Error opening calendar:', error);
     }
   };
